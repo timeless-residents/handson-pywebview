@@ -1,4 +1,4 @@
-name: Build and Release PyWebview App
+name: Build and Release PyWebview App (Debug Version)
 
 on:
   push:
@@ -22,112 +22,154 @@ jobs:
             asset_name: launcher-windows.zip
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      - name: Install dependencies (Common)
+      - name: Install dependencies (Common) [Debug]
         run: |
+          echo ">>> [Common] Starting installation of common dependencies"
           python -m pip install --upgrade pip
           pip install pyinstaller pywebview
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements.txt ]; then
+            echo ">>> [Common] Installing requirements.txt"
+            pip install -r requirements.txt
+          else
+            echo ">>> [Common] No requirements.txt found"
+          fi
+          echo ">>> [Common] Finished installation of common dependencies"
         shell: bash
 
-      - name: Install dependencies (macOS)
+      - name: Install dependencies (macOS) [Debug]
         if: matrix.os == 'macos-latest'
         run: |
-          if [ -f requirements-macos.txt ]; then pip install -r requirements-macos.txt; fi
+          echo ">>> [macOS] Starting installation of macOS-specific dependencies"
+          if [ -f requirements-macos.txt ]; then
+            pip install -r requirements-macos.txt
+          else
+            echo ">>> [macOS] No requirements-macos.txt found"
+          fi
+          echo ">>> [macOS] Finished installation of macOS-specific dependencies"
         shell: bash
 
-      - name: Install dependencies (Windows)
+      - name: Install dependencies (Windows) [Debug]
         if: matrix.os == 'windows-latest'
         run: |
+          echo ">>> [Windows] Starting installation of Windows-specific dependencies"
           if (Test-Path -Path requirements-windows.txt -PathType Leaf) {
             pip install -r requirements-windows.txt
+          } else {
+            echo ">>> [Windows] No requirements-windows.txt found"
           }
+          echo ">>> [Windows] Finished installation of Windows-specific dependencies"
         shell: pwsh
 
-      # macOS用のビルド（--osx-bundle-identifier  を指定）
-      - name: Build with PyInstaller (macOS)
+      - name: Build with PyInstaller (macOS) [Debug]
         if: matrix.os == 'macos-latest'
         run: |
+          echo ">>> [macOS] Starting PyInstaller build for macOS"
           pyinstaller --clean --onedir --windowed --noconfirm \
-            --osx-bundle-identifier "handson.pywebview.launcher" \
+            --osx-bundle-identifier "com.example.launcher" \
             --add-data "showroom:showroom" launcher.py
+          echo ">>> [macOS] Listing contents of dist directory"
           ls -la dist/
+          echo ">>> [macOS] Finished PyInstaller build for macOS"
         shell: bash
 
-      - name: Build with PyInstaller (Windows)
+      - name: Build with PyInstaller (Windows) [Debug]
         if: matrix.os == 'windows-latest'
         run: |
+          echo ">>> [Windows] Starting PyInstaller build for Windows"
           pyinstaller --clean --onedir --windowed --noconfirm \
             --add-data "showroom;showroom" launcher.py
+          echo ">>> [Windows] Listing contents of dist directory"
           dir dist
+          echo ">>> [Windows] Finished PyInstaller build for Windows"
+        shell: pwsh
 
-      # macOS用証明書のインストールと設定
-      - name: Install Apple Certificate
+      - name: Install Apple Certificate [Debug]
         if: matrix.os == 'macos-latest'
         env:
           APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
+          echo ">>> [macOS] Decoding and installing Apple Certificate"
           echo $APPLE_CERTIFICATE_BASE64 | base64 --decode > certificate.p12
+          echo ">>> [macOS] Creating keychain"
           security create-keychain -p $KEYCHAIN_PASSWORD build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p $KEYCHAIN_PASSWORD build.keychain
           security set-keychain-settings -t 3600 -u build.keychain
+          echo ">>> [macOS] Importing certificate into keychain"
           security import certificate.p12 -k build.keychain -P $APPLE_CERTIFICATE_PASSWORD -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -s -k $KEYCHAIN_PASSWORD build.keychain
+          echo ">>> [macOS] Certificate installation complete"
           security find-identity -v build.keychain
+        shell: bash
 
-      # macOSアプリに署名
-      - name: Sign macOS Application
+      - name: Sign macOS Application [Debug]
         if: matrix.os == 'macos-latest'
         env:
           APPLE_DEVELOPER_IDENTITY: ${{ secrets.APPLE_DEVELOPER_IDENTITY }}
         run: |
+          echo ">>> [macOS] Starting code signing process"
           security find-identity -v build.keychain
           IDENTITY=$(security find-identity -v build.keychain | grep "Developer ID Application" | sed -E 's/.*"([^"]+)".*/\1/')
           if [ -n "$IDENTITY" ]; then
-            echo "Using identity: $IDENTITY"
+            echo ">>> [macOS] Using extracted identity: $IDENTITY"
             /usr/bin/codesign --force --options runtime --sign "$IDENTITY" --deep dist/launcher.app
           else
-            echo "Using identity from secrets: $APPLE_DEVELOPER_IDENTITY"
+            echo ">>> [macOS] Using identity from secrets: $APPLE_DEVELOPER_IDENTITY"
             /usr/bin/codesign --force --options runtime --sign "$APPLE_DEVELOPER_IDENTITY" --deep dist/launcher.app
           fi
+          echo ">>> [macOS] Verifying code signature"
           codesign -vvv --deep --strict dist/launcher.app
+          echo ">>> [macOS] Code signing complete"
+        shell: bash
 
-      # macOSアプリの公証プロセス
-      - name: Notarize macOS Application
+      - name: Notarize macOS Application [Debug]
         if: matrix.os == 'macos-latest'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          echo ">>> [macOS] Starting notarization process"
+          echo ">>> [macOS] Creating ZIP archive for notarization"
           ditto -c -k --keepParent dist/launcher.app launcher.zip
+          echo ">>> [macOS] Submitting app for notarization"
           xcrun notarytool submit launcher.zip --apple-id "$APPLE_ID" --password "$APPLE_APP_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
+          echo ">>> [macOS] Notarization submission complete"
+          echo ">>> [macOS] Stapling notarization to app"
           xcrun stapler staple dist/launcher.app
+          echo ">>> [macOS] Validating notarized app"
           xcrun stapler validate dist/launcher.app
+          echo ">>> [macOS] Notarization process complete"
+        shell: bash
 
-      # ZIP アーカイブの作成（macOS）
-      - name: Create ZIP archive (macOS)
+      - name: Create ZIP archive (macOS) [Debug]
         if: matrix.os == 'macos-latest' && success()
         run: |
+          echo ">>> [macOS] Creating ZIP archive"
           cd dist
           zip -r ../${{ matrix.asset_name }} launcher.app
+          echo ">>> [macOS] ZIP archive created"
+        shell: bash
 
-      # ZIP アーカイブの作成（Windows）
-      - name: Create ZIP archive (Windows)
+      - name: Create ZIP archive (Windows) [Debug]
         if: matrix.os == 'windows-latest' && success()
         run: |
+          echo ">>> [Windows] Creating ZIP archive"
           Compress-Archive -Path dist/launcher -DestinationPath ${{ matrix.asset_name }}
+          echo ">>> [Windows] ZIP archive created"
+        shell: pwsh
 
-      - name: Create Release
+      - name: Create Release [Debug]
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/') && success()
         with:
@@ -139,3 +181,5 @@ jobs:
             ## インストール方法
             - Windows: ZIP を解凍し、フォルダ内の `launcher.exe` を実行
             - macOS: ZIP を解凍し、`launcher.app` をダブルクリックで実行
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
