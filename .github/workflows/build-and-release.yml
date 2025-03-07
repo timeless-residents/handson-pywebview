@@ -53,15 +53,16 @@ jobs:
       - name: Build with PyInstaller (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          # バイトコードの最適化レベルを設定し、docstringを除去
-          pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom:showroom" --key="YOUR_SECRET_KEY" launcher.py
+          # --onedirオプションで高速化、--keyオプションは削除
+          pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom:showroom" launcher.py
           ls -la dist/
         shell: bash
 
       - name: Build with PyInstaller (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom;showroom" --key="YOUR_SECRET_KEY" launcher.py
+          # --onedirオプションで高速化、--keyオプションは削除
+          pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom;showroom" launcher.py
           dir dist
 
       - name: Create ZIP archive (macOS)
@@ -87,3 +88,7 @@ jobs:
             ## インストール方法
             - Windows: ZIPを解凍し、フォルダ内の `launcher.exe` を実行
             - macOS: ZIPを解凍し、`launcher.app` を右クリック→「開く」→「開く」
+
+            ## 注意点
+            - 起動速度を優先して最適化しています
+            - 初回起動時にはセキュリティ警告が表示される場合があります
