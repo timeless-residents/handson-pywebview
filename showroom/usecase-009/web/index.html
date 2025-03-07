@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>システムモニター</title>
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>システムモニター</h1>
+            <div class="system-info" id="system-info">
+                <p>システム: <span id="system-name">読み込み中...</span></p>
+                <p>起動時間: <span id="boot-time">読み込み中...</span></p>
+            </div>
+            <div class="refresh-control">
+                <button id="refresh-btn">更新</button>
+                <label>
+                    <input type="checkbox" id="auto-refresh"> 自動更新 (5秒)
+                </label>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="dashboard">ダッシュボード</button>
+            <button class="tab-btn" data-tab="cpu">CPU</button>
+            <button class="tab-btn" data-tab="memory">メモリ</button>
+            <button class="tab-btn" data-tab="disk">ディスク</button>
+            <button class="tab-btn" data-tab="network">ネットワーク</button>
+            <button class="tab-btn" data-tab="processes">プロセス</button>
+        </div>
+
+        <div class="tab-content">
+            <!-- ダッシュボードタブ -->
+            <div class="tab-pane active" id="dashboard">
+                <div class="dashboard-grid">
+                    <div class="dashboard-item">
+                        <h3>CPU使用率</h3>
+                        <div class="gauge-container">
+                            <div class="gauge" id="cpu-gauge">
+                                <div class="gauge-background"></div>
+                                <div class="gauge-fill"></div>
+                                <div class="gauge-progress">
+                                    <div class="gauge-value" id="cpu-value">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cpu-info">
+                            <p>コア数: <span id="cpu-cores">-</span></p>
+                            <p>周波数: <span id="cpu-freq">-</span></p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-item">
+                        <h3>メモリ使用率</h3>
+                        <div class="gauge-container">
+                            <div class="gauge" id="memory-gauge">
+                                <div class="gauge-background"></div>
+                                <div class="gauge-fill"></div>
+                                <div class="gauge-progress">
+                                    <div class="gauge-value" id="memory-value">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="memory-info">
+                            <p>使用中: <span id="memory-used">-</span></p>
+                            <p>合計: <span id="memory-total">-</span></p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-item">
+                        <h3>ディスク使用率</h3>
+                        <div id="disk-usage-container">
+                            <div class="disk-item">
+                                <p>読み込み中...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-item">
+                        <h3>ネットワークトラフィック</h3>
+                        <div class="network-traffic">
+                            <div class="traffic-item">
+                                <span class="traffic-label">送信:</span>
+                                <span class="traffic-value" id="network-send">0 B/s</span>
+                            </div>
+                            <div class="traffic-item">
+                                <span class="traffic-label">受信:</span>
+                                <span class="traffic-value" id="network-recv">0 B/s</span>
+                            </div>
+                            <div class="traffic-item">
+                                <span class="traffic-label">合計送信:</span>
+                                <span class="traffic-value" id="network-total-sent">0 B</span>
+                            </div>
+                            <div class="traffic-item">
+                                <span class="traffic-label">合計受信:</span>
+                                <span class="traffic-value" id="network-total-recv">0 B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="top-processes">
+                    <h3>トッププロセス (CPU使用率)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>名前</th>
+                                <th>ユーザー</th>
+                                <th>CPU %</th>
+                                <th>メモリ %</th>
+                                <th>状態</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-processes-body">
+                            <tr>
+                                <td colspan="6">読み込み中...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CPUタブ -->
+            <div class="tab-pane" id="cpu">
+                <div class="cpu-details">
+                    <div class="info-section">
+                        <h3>CPU情報</h3>
+                        <div class="info-grid" id="cpu-details">
+                            <div class="info-item">
+                                <span class="info-label">プロセッサ:</span>
+                                <span class="info-value" id="cpu-processor">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">物理コア:</span>
+                                <span class="info-value" id="cpu-physical-cores">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">論理コア:</span>
+                                <span class="info-value" id="cpu-logical-cores">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">現在の周波数:</span>
+                                <span class="info-value" id="cpu-current-freq">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">最大周波数:</span>
+                                <span class="info-value" id="cpu-max-freq">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cpu-cores-usage">
+                        <h3>コア別使用率</h3>
+                        <div id="cpu-cores-container">
+                            <p>読み込み中...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- メモリタブ -->
+            <div class="tab-pane" id="memory">
+                <div class="memory-details">
+                    <div class="memory-section">
+                        <h3>物理メモリ</h3>
+                        <div class="memory-bar-container">
+                            <div class="memory-bar">
+                                <div class="memory-bar-used" id="physical-memory-bar"></div>
+                            </div>
+                            <div class="memory-bar-labels">
+                                <span>0</span>
+                                <span id="physical-memory-total">-</span>
+                            </div>
+                        </div>
+                        <div class="memory-stats">
+                            <div class="memory-stat-item">
+                                <span class="memory-stat-label">合計:</span>
+                                <span class="memory-stat-value" id="physical-memory-total-value">-</span>
+                            </div>
+                            <div class="memory-stat-item">
+                                <span class="memory-stat-label">使用中:</span>
+                                <span class="memory-stat-value" id="physical-memory-used">-</span>
+                            </div>
+                            <div class="memory-stat-item">
+                                <span class="memory-stat-label">利用可能:</span>
+                                <span class="memory-stat-value" id="physical-memory-available">-</span>
+                            </div>
+                            <div class="memory-stat-item">
+                                <span class="memory-stat-label">使用率:</span>
+                                <span class="memory-stat-value" id="physical-memory-percent">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="memory-section">
+                        <h3>スワップメモリ</h3>
+                        <div class="memory-bar-container">
+                            <div class="memory-bar">
+                                <div class="memory-bar-used" id="swap-memory-bar"></div>
+                            </div>
+                            <div class="memory-bar-labels">
+                                <span>0</span>
+                                <span id="swap-memory-total">-</span>
+                            </div>
+                        </div>
+                        <div class="memory-stats">
+                            <div class="memory-stat-item">
+                                <span class="memory-stat-label">合計:</span>
+                                <span class="memory-stat-value" id="swap-memory-total-value">-</span>
+                            </div>
+                            <div class="memory-stat-item">
+                                <span class="memory-stat-label">使用中:</span>
+                                <span class="memory-stat-value" id="swap-memory-used">-</span>
+                            </div>
+                            <div class="memory-stat-item">
+                                <span class="memory-stat-label">空き:</span>
+                                <span class="memory-stat-value" id="swap-memory-free">-</span>
+                            </div>
+                            <div class="memory-stat-item">
+                                <span class="memory-stat-label">使用率:</span>
+                                <span class="memory-stat-value" id="swap-memory-percent">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ディスクタブ -->
+            <div class="tab-pane" id="disk">
+                <div class="disk-details">
+                    <h3>パーティション情報</h3>
+                    <div id="disk-partitions-container">
+                        <p>読み込み中...</p>
+                    </div>
+
+                    <h3>ディスクI/O</h3>
+                    <div class="disk-io-stats">
+                        <div class="disk-io-item">
+                            <span class="disk-io-label">読み込み操作:</span>
+                            <span class="disk-io-value" id="disk-read-count">-</span>
+                        </div>
+                        <div class="disk-io-item">
+                            <span class="disk-io-label">書き込み操作:</span>
+                            <span class="disk-io-value" id="disk-write-count">-</span>
+                        </div>
+                        <div class="disk-io-item">
+                            <span class="disk-io-label">読み込みバイト:</span>
+                            <span class="disk-io-value" id="disk-read-bytes">-</span>
+                        </div>
+                        <div class="disk-io-item">
+                            <span class="disk-io-label">書き込みバイト:</span>
+                            <span class="disk-io-value" id="disk-write-bytes">-</span>
+                        </div>
+                        <div class="disk-io-item">
+                            <span class="disk-io-label">読み込み時間:</span>
+                            <span class="disk-io-value" id="disk-read-time">-</span>
+                        </div>
+                        <div class="disk-io-item">
+                            <span class="disk-io-label">書き込み時間:</span>
+                            <span class="disk-io-value" id="disk-write-time">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ネットワークタブ -->
+            <div class="tab-pane" id="network">
+                <div class="network-details">
+                    <h3>ネットワークトラフィック</h3>
+                    <div class="network-traffic-details">
+                        <div class="network-traffic-item">
+                            <span class="network-traffic-label">送信速度:</span>
+                            <span class="network-traffic-value" id="network-send-rate">-</span>
+                        </div>
+                        <div class="network-traffic-item">
+                            <span class="network-traffic-label">受信速度:</span>
+                            <span class="network-traffic-value" id="network-recv-rate">-</span>
+                        </div>
+                        <div class="network-traffic-item">
+                            <span class="network-traffic-label">合計送信バイト:</span>
+                            <span class="network-traffic-value" id="network-total-sent-bytes">-</span>
+                        </div>
+                        <div class="network-traffic-item">
+                            <span class="network-traffic-label">合計受信バイト:</span>
+                            <span class="network-traffic-value" id="network-total-recv-bytes">-</span>
+                        </div>
+                        <div class="network-traffic-item">
+                            <span class="network-traffic-label">送信パケット:</span>
+                            <span class="network-traffic-value" id="network-packets-sent">-</span>
+                        </div>
+                        <div class="network-traffic-item">
+                            <span class="network-traffic-label">受信パケット:</span>
+                            <span class="network-traffic-value" id="network-packets-recv">-</span>
+                        </div>
+                    </div>
+
+                    <h3>ネットワークインターフェース</h3>
+                    <div id="network-interfaces-container">
+                        <p>読み込み中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プロセスタブ -->
+            <div class="tab-pane" id="processes">
+                <div class="processes-controls">
+                    <input type="text" id="process-search" placeholder="プロセス名で検索...">
+                    <select id="process-sort">
+                        <option value="cpu">CPU使用率</option>
+                        <option value="memory">メモリ使用率</option>
+                        <option value="pid">PID</option>
+                        <option value="name">名前</option>
+                    </select>
+                </div>
+                <div class="processes-table-container">
+                    <table class="processes-table">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>名前</th>
+                                <th>ユーザー</th>
+                                <th>CPU %</th>
+                                <th>メモリ %</th>
+                                <th>開始時間</th>
+                                <th>状態</th>
+                            </tr>
+                        </thead>
+                        <tbody id="processes-body">
+                            <tr>
+                                <td colspan="7">読み込み中...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

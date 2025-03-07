@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Markdown Editor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- シンタックスハイライト用のライブラリ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <!-- マークダウンパーサー -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Markdown Editor</h1>
+            <div class="file-operations">
+                <div class="file-input-group">
+                    <input type="text" id="filename" placeholder="ファイル名">
+                    <button id="saveBtn">保存</button>
+                    <button id="loadBtn">読み込み</button>
+                    <button id="exportBtn">HTMLエクスポート</button>
+                </div>
+                <select id="fileList" class="hidden">
+                    <option value="">ファイルを選択...</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="editor-container">
+            <div class="editor-section">
+                <h2>Markdown</h2>
+                <textarea id="markdownEditor" placeholder="マークダウンを入力してください..."></textarea>
+            </div>
+            <div class="preview-section">
+                <h2>プレビュー</h2>
+                <div id="preview"></div>
+            </div>
+        </div>
+
+        <div id="notification" class="hidden"></div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

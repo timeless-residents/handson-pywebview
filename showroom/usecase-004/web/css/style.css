@@ -1,0 +1,248 @@
+/* 全体のスタイル */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f7;
+    color: #333;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* ヘッダー部分 */
+header {
+    background-color: white;
+    padding: 15px 20px;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.file-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.file-selector {
+    flex: 1;
+    min-width: 200px;
+}
+
+.page-controls,
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#searchInput {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#searchInfo {
+    font-size: 14px;
+    color: #666;
+}
+
+/* PDFビューア部分 */
+.viewer-container {
+    flex: 1;
+    position: relative;
+    background-color: #e0e0e0;
+    overflow: auto;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#pdfContainer {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100%;
+}
+
+#pdfViewer {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
+#textLayer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    opacity: 0.2;
+    line-height: 1.0;
+}
+
+#textLayer>span {
+    color: transparent;
+    position: absolute;
+    white-space: pre;
+    cursor: text;
+    transform-origin: 0% 0%;
+}
+
+#textLayer .highlight {
+    margin: -1px;
+    padding: 1px;
+    background-color: #b400aa;
+    border-radius: 4px;
+}
+
+#textLayer .highlight.selected {
+    background-color: #006400;
+}
+
+#annotationLayer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+/* コントロール要素 */
+select,
+button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+}
+
+select {
+    min-width: 200px;
+}
+
+button {
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0077ed;
+}
+
+button:active {
+    background-color: #0062c3;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* ローディングインジケーター */
+#loadingIndicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0071e3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 通知スタイル */
+#notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 1000;
+}
+
+#notification.success {
+    background-color: #28a745;
+}
+
+#notification.error {
+    background-color: #dc3545;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+
+    .file-controls,
+    .search-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .file-selector,
+    .page-controls,
+    .zoom-controls {
+        width: 100%;
+    }
+
+    #searchInput {
+        width: 100%;
+    }
+}

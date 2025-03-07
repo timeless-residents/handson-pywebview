@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Italian"
+  },
+  {
+    "id": 2,
+    "name": "Breakfast"
+  },
+  {
+    "id": 3,
+    "name": "Japanese"
+  },
+  {
+    "id": 4,
+    "name": "Dessert"
+  },
+  {
+    "id": 5,
+    "name": "Vegetarian"
+  },
+  {
+    "id": 6,
+    "name": "Seafood"
+  },
+  {
+    "id": 7,
+    "name": "朝食メニュー"
+  }
+]

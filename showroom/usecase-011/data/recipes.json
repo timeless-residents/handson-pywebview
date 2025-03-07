@@ -1,0 +1,95 @@
+[
+  {
+    "id": 1,
+    "name": "Simple Pasta",
+    "description": "A quick and easy pasta dish",
+    "category": "Italian",
+    "ingredients": [
+      {
+        "name": "Pasta",
+        "amount": "200",
+        "unit": "g"
+      },
+      {
+        "name": "Olive Oil",
+        "amount": "2",
+        "unit": "tbsp"
+      },
+      {
+        "name": "Garlic",
+        "amount": "2",
+        "unit": "cloves"
+      },
+      {
+        "name": "Salt",
+        "amount": "1",
+        "unit": "tsp"
+      },
+      {
+        "name": "Pepper",
+        "amount": "1/2",
+        "unit": "tsp"
+      }
+    ],
+    "steps": [
+      "Boil water in a large pot",
+      "Add salt and pasta to the boiling water",
+      "Cook pasta according to package instructions",
+      "Drain pasta and return to pot",
+      "Add olive oil, minced garlic, salt, and pepper",
+      "Toss to combine and serve immediately"
+    ],
+    "prepTime": 5,
+    "cookTime": 10,
+    "servings": 2,
+    "createdAt": "2025-03-07T14:57:48.364066",
+    "updatedAt": "2025-03-07T14:57:48.364073"
+  },
+  {
+    "id": 2,
+    "name": "Classic Omelette",
+    "description": "A fluffy breakfast omelette",
+    "category": "Breakfast",
+    "ingredients": [
+      {
+        "name": "Eggs",
+        "amount": "3",
+        "unit": ""
+      },
+      {
+        "name": "Butter",
+        "amount": "1",
+        "unit": "tbsp"
+      },
+      {
+        "name": "Salt",
+        "amount": "1/4",
+        "unit": "tsp"
+      },
+      {
+        "name": "Pepper",
+        "amount": "1/4",
+        "unit": "tsp"
+      },
+      {
+        "name": "Cheese",
+        "amount": "30",
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Crack eggs into a bowl and beat until smooth",
+      "Add salt and pepper to the eggs",
+      "Heat butter in a non-stick pan over medium heat",
+      "Pour in the egg mixture",
+      "When the eggs begin to set, sprinkle cheese on top",
+      "Fold the omelette in half and cook until the cheese melts",
+      "Serve hot"
+    ],
+    "prepTime": 3,
+    "cookTime": 5,
+    "servings": 1,
+    "createdAt": "2025-03-07T14:57:48.364075",
+    "updatedAt": "2025-03-07T14:57:48.364076"
+  }
+]

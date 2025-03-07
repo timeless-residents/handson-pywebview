@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "JavaScript",
+    "color": "#f7df1e"
+  },
+  {
+    "id": 2,
+    "name": "Python",
+    "color": "#3776ab"
+  },
+  {
+    "id": 3,
+    "name": "HTML",
+    "color": "#e34c26"
+  },
+  {
+    "id": 4,
+    "name": "CSS",
+    "color": "#264de4"
+  },
+  {
+    "id": 5,
+    "name": "Java",
+    "color": "#007396"
+  },
+  {
+    "id": 6,
+    "name": "C#",
+    "color": "#178600"
+  },
+  {
+    "id": 7,
+    "name": "PHP",
+    "color": "#777bb4"
+  },
+  {
+    "id": 8,
+    "name": "Ruby",
+    "color": "#cc342d"
+  },
+  {
+    "id": 9,
+    "name": "Go",
+    "color": "#00add8"
+  },
+  {
+    "id": 10,
+    "name": "その他",
+    "color": "#9e9e9e"
+  }
+]

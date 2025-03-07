@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Image Gallery</h1>
+            <div class="upload-container">
+                <input type="file" id="file-upload" accept="image/*" multiple>
+                <label for="file-upload" class="upload-btn">Upload Images</label>
+            </div>
+        </header>
+
+        <main>
+            <div class="gallery-container">
+                <div class="sidebar">
+                    <h2>Images</h2>
+                    <div id="gallery" class="gallery-grid"></div>
+                </div>
+
+                <div class="main-content">
+                    <div class="image-view">
+                        <div id="current-image-container">
+                            <img id="current-image" src="" alt="Select an image">
+                            <div id="no-image-message">Select an image from the gallery</div>
+                        </div>
+
+                        <div class="image-controls">
+                            <div class="slideshow-controls">
+                                <button id="prev-btn" class="control-btn">Previous</button>
+                                <button id="play-btn" class="control-btn">Play Slideshow</button>
+                                <button id="next-btn" class="control-btn">Next</button>
+                            </div>
+
+                            <div class="edit-controls">
+                                <div class="rotate-controls">
+                                    <button id="rotate-left" class="control-btn">Rotate Left</button>
+                                    <button id="rotate-right" class="control-btn">Rotate Right</button>
+                                </div>
+
+                                <div class="resize-controls">
+                                    <label for="width">Width:</label>
+                                    <input type="number" id="width" min="50" max="2000">
+                                    <label for="height">Height:</label>
+                                    <input type="number" id="height" min="50" max="2000">
+                                    <button id="resize-btn" class="control-btn">Resize</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="exif-container">
+                        <h3>Image Information</h3>
+                        <div id="exif-data" class="exif-data">
+                            <p>No image selected</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

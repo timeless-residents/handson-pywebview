@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>家計簿アプリ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Flatpickr (Date Picker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>家計簿アプリ</h1>
+            <div class="header-actions">
+                <button id="addTransactionBtn" class="primary-btn">
+                    <span class="material-icons">add</span>取引を追加
+                </button>
+                <button id="manageCategoriesBtn" class="secondary-btn">
+                    <span class="material-icons">category</span>カテゴリー管理
+                </button>
+                <button id="manageBudgetsBtn" class="secondary-btn">
+                    <span class="material-icons">account_balance_wallet</span>予算管理
+                </button>
+            </div>
+        </header>
+
+        <!-- ダッシュボード -->
+        <div class="dashboard">
+            <div class="period-selector">
+                <button id="prevPeriodBtn" class="icon-btn">
+                    <span class="material-icons">chevron_left</span>
+                </button>
+                <div id="currentPeriod">2025年3月</div>
+                <button id="nextPeriodBtn" class="icon-btn">
+                    <span class="material-icons">chevron_right</span>
+                </button>
+                <select id="periodType">
+                    <option value="month">月別</option>
+                    <option value="year">年別</option>
+                </select>
+            </div>
+
+            <div class="summary-cards">
+                <div class="summary-card income">
+                    <div class="card-title">収入</div>
+                    <div class="card-amount" id="totalIncome">¥0</div>
+                </div>
+                <div class="summary-card expense">
+                    <div class="card-title">支出</div>
+                    <div class="card-amount" id="totalExpense">¥0</div>
+                </div>
+                <div class="summary-card balance">
+                    <div class="card-title">収支</div>
+                    <div class="card-amount" id="totalBalance">¥0</div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-title">カテゴリー別支出</div>
+                    <div class="chart-container">
+                        <canvas id="expensePieChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">月別推移</div>
+                    <div class="chart-container">
+                        <canvas id="trendLineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="budget-overview" id="budgetOverview">
+                <div class="section-title">予算進捗状況</div>
+                <div id="budgetProgressList"></div>
+            </div>
+        </div>
+
+        <!-- フィルター -->
+        <div class="filters">
+            <div class="filter-group">
+                <label for="filterType">種類:</label>
+                <select id="filterType">
+                    <option value="all">すべて</option>
+                    <option value="income">収入</option>
+                    <option value="expense">支出</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterCategory">カテゴリー:</label>
+                <select id="filterCategory">
+                    <option value="all">すべて</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterDateFrom">期間:</label>
+                <input type="text" id="filterDateFrom" placeholder="開始日" class="date-input">
+                <span>～</span>
+                <input type="text" id="filterDateTo" placeholder="終了日" class="date-input">
+            </div>
+            <div class="search-group">
+                <input type="text" id="searchInput" placeholder="検索...">
+                <button id="searchBtn">
+                    <span class="material-icons">search</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- トランザクションリスト -->
+        <div class="transactions-container">
+            <div class="section-title">取引履歴</div>
+            <div id="transactionsList"></div>
+        </div>
+
+        <!-- トランザクション追加・編集モーダル -->
+        <div id="transactionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="transactionModalTitle">取引を追加</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="transactionForm">
+                        <input type="hidden" id="transactionId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="transactionType">種類:</label>
+                                <select id="transactionType">
+                                    <option value="expense">支出</option>
+                                    <option value="income">収入</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="transactionDate">日付:</label>
+                                <input type="text" id="transactionDate" placeholder="YYYY-MM-DD" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="transactionAmount">金額:</label>
+                                <input type="number" id="transactionAmount" min="0" step="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="transactionCategory">カテゴリー:</label>
+                                <select id="transactionCategory"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="transactionDescription">説明:</label>
+                            <textarea id="transactionDescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancelTransactionBtn" class="secondary-btn">キャンセル</button>
+                            <button type="submit" id="saveTransactionBtn" class="primary-btn">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- カテゴリー管理モーダル -->
+        <div id="categoryModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>カテゴリー管理</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="tab-container">
+                        <div class="tabs">
+                            <button class="tab-btn active" data-type="expense">支出カテゴリー</button>
+                            <button class="tab-btn" data-type="income">収入カテゴリー</button>
+                        </div>
+                        <div class="tab-content">
+                            <div class="categories-list" id="categoriesList"></div>
+                            <form id="categoryForm">
+                                <input type="hidden" id="categoryId">
+                                <input type="hidden" id="categoryType" value="expense">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="categoryName">カテゴリー名:</label>
+                                        <input type="text" id="categoryName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoryColor">色:</label>
+                                        <input type="color" id="categoryColor" value="#9e9e9e">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" id="resetCategoryBtn" class="secondary-btn">リセット</button>
+                                    <button type="submit" id="saveCategoryBtn" class="primary-btn">保存</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 予算管理モーダル -->
+        <div id="budgetModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>予算管理</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="budgets-list" id="budgetsList"></div>
+                    <form id="budgetForm">
+                        <input type="hidden" id="budgetId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="budgetCategory">カテゴリー:</label>
+                                <select id="budgetCategory"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="budgetAmount">予算額:</label>
+                                <input type="number" id="budgetAmount" min="0" step="1" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="budgetPeriod">期間:</label>
+                                <select id="budgetPeriod">
+                                    <option value="monthly">月次</option>
+                                    <option value="yearly">年次</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="budgetStartDate">開始日:</label>
+                                <input type="text" id="budgetStartDate" placeholder="YYYY-MM" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="resetBudgetBtn" class="secondary-btn">リセット</button>
+                            <button type="submit" id="saveBudgetBtn" class="primary-btn">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 通知 -->
+        <div id="notification" class="hidden"></div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

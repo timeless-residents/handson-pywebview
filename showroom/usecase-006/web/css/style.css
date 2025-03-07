@@ -1,0 +1,738 @@
+/* 全体のスタイル */
+:root {
+    --primary-color: #4a6da7;
+    --primary-light: #6b8fc9;
+    --primary-dark: #2a4d87;
+    --secondary-color: #f5f5f7;
+    --text-color: #333;
+    --border-color: #ddd;
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --danger-color: #f44336;
+    --gray-color: #9e9e9e;
+    --income-color: #4caf50;
+    --expense-color: #f44336;
+    --balance-color: #2196f3;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ヘッダー */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h1 {
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* ボタン */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.secondary-btn {
+    background-color: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.secondary-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.icon-btn {
+    padding: 6px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.material-icons {
+    font-size: 20px;
+}
+
+/* ダッシュボード */
+.dashboard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.period-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+#currentPeriod {
+    font-size: 18px;
+    font-weight: 500;
+    min-width: 120px;
+    text-align: center;
+}
+
+.summary-cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.summary-card.income {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--income-color);
+}
+
+.summary-card.expense {
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid var(--expense-color);
+}
+
+.summary-card.balance {
+    background-color: rgba(33, 150, 243, 0.1);
+    border-left: 4px solid var(--balance-color);
+}
+
+.card-title {
+    font-size: 14px;
+    color: var(--gray-color);
+    margin-bottom: 5px;
+}
+
+.card-amount {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.income .card-amount {
+    color: var(--income-color);
+}
+
+.expense .card-amount {
+    color: var(--expense-color);
+}
+
+.balance .card-amount {
+    color: var(--balance-color);
+}
+
+.charts-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.chart-card {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.chart-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.chart-container {
+    height: 250px;
+    position: relative;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.budget-overview {
+    margin-top: 20px;
+}
+
+.budget-progress-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.budget-category {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 150px;
+}
+
+.category-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.budget-progress {
+    flex: 1;
+    margin: 0 15px;
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--success-color);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-fill.warning {
+    background-color: var(--warning-color);
+}
+
+.progress-fill.danger {
+    background-color: var(--danger-color);
+}
+
+.budget-amounts {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--gray-color);
+    margin-top: 5px;
+}
+
+.budget-info {
+    text-align: right;
+    min-width: 120px;
+}
+
+.budget-spent {
+    font-weight: 500;
+}
+
+.budget-remaining {
+    font-size: 12px;
+    color: var(--gray-color);
+}
+
+.budget-remaining.negative {
+    color: var(--danger-color);
+}
+
+/* フィルター */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-size: 14px;
+    color: var(--gray-color);
+}
+
+.search-group {
+    display: flex;
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-group input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px 0 0 4px;
+    font-size: 14px;
+}
+
+.search-group button {
+    border-radius: 0 4px 4px 0;
+    padding: 8px 12px;
+}
+
+select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+    min-width: 120px;
+}
+
+.date-input {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    width: 120px;
+}
+
+/* トランザクションリスト */
+.transactions-container {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    overflow: auto;
+}
+
+#transactionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.transaction-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-date {
+    min-width: 100px;
+    text-align: center;
+}
+
+.transaction-date-day {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.transaction-date-month {
+    font-size: 12px;
+    color: var(--gray-color);
+}
+
+.transaction-category {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+}
+
+.transaction-content {
+    flex: 1;
+    padding: 0 15px;
+}
+
+.transaction-description {
+    font-weight: 500;
+}
+
+.transaction-meta {
+    font-size: 12px;
+    color: var(--gray-color);
+}
+
+.transaction-amount {
+    font-weight: 500;
+    font-size: 16px;
+    min-width: 100px;
+    text-align: right;
+}
+
+.transaction-amount.income {
+    color: var(--income-color);
+}
+
+.transaction-amount.expense {
+    color: var(--expense-color);
+}
+
+.transaction-actions {
+    display: flex;
+    gap: 5px;
+    margin-left: 10px;
+}
+
+/* タブ */
+.tab-container {
+    margin-bottom: 20px;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--gray-color);
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+/* カテゴリーリスト */
+.categories-list {
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.category-item:last-child {
+    border-bottom: none;
+}
+
+.category-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.category-actions {
+    display: flex;
+    gap: 5px;
+}
+
+/* 予算リスト */
+.budgets-list {
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.budget-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.budget-item:last-child {
+    border-bottom: none;
+}
+
+.budget-item-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.budget-item-category {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.budget-item-period {
+    font-size: 12px;
+    color: var(--gray-color);
+}
+
+.budget-item-amount {
+    font-weight: 500;
+}
+
+.budget-item-actions {
+    display: flex;
+    gap: 5px;
+}
+
+/* モーダル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 50px auto;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: modalFadeIn 0.3s;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    color: var(--primary-color);
+}
+
+.close-btn {
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--gray-color);
+}
+
+.close-btn:hover {
+    color: var(--danger-color);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+/* フォーム */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="color"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+input[type="color"] {
+    height: 40px;
+    padding: 2px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* 通知 */
+#notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+#notification.success {
+    background-color: var(--success-color);
+}
+
+#notification.error {
+    background-color: var(--danger-color);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+
+    .summary-cards,
+    .charts-container {
+        flex-direction: column;
+    }
+
+    .transaction-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .transaction-date,
+    .transaction-category,
+    .transaction-content,
+    .transaction-amount {
+        width: 100%;
+        min-width: auto;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+
+    .transaction-actions {
+        margin-left: 0;
+        margin-top: 10px;
+        align-self: flex-end;
+    }
+}

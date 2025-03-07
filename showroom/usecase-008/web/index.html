@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>簡易データベースビューア</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- CodeMirror for SQL editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/sql-hint.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>簡易データベースビューア</h1>
+            <div class="header-actions">
+                <button id="createDatabaseBtn" class="primary-btn">
+                    <span class="material-icons">add</span>新規データベース
+                </button>
+                <button id="connectDatabaseBtn" class="secondary-btn">
+                    <span class="material-icons">link</span>データベース接続
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- サイドバー -->
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <h3>データベース情報</h3>
+                    </div>
+                    <div class="sidebar-content">
+                        <div id="databaseInfo" class="database-info">
+                            <div class="info-item">
+                                <span class="info-label">接続状態:</span>
+                                <span id="connectionStatus" class="info-value not-connected">未接続</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">データベース:</span>
+                                <span id="currentDatabase" class="info-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <h3>テーブル一覧</h3>
+                    </div>
+                    <div class="sidebar-content">
+                        <ul id="tablesList" class="tables-list">
+                            <!-- テーブルリストがここに表示されます -->
+                            <li class="no-tables">テーブルがありません</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- メインコンテンツ -->
+            <div class="content">
+                <div class="tabs">
+                    <div class="tab-header">
+                        <div class="tab active" data-tab="table-view">テーブルビュー</div>
+                        <div class="tab" data-tab="query-editor">クエリエディタ</div>
+                        <div class="tab" data-tab="structure-view">テーブル構造</div>
+                    </div>
+                    <div class="tab-content">
+                        <!-- テーブルビュー -->
+                        <div class="tab-pane active" id="table-view">
+                            <div class="table-view-header">
+                                <h2 id="tableViewTitle">テーブルを選択してください</h2>
+                                <div class="table-actions">
+                                    <button id="addRowBtn" class="icon-btn" title="行を追加" disabled>
+                                        <span class="material-icons">add</span>
+                                    </button>
+                                    <button id="refreshTableBtn" class="icon-btn" title="更新" disabled>
+                                        <span class="material-icons">refresh</span>
+                                    </button>
+                                    <select id="pageSizeSelect" disabled>
+                                        <option value="10">10行</option>
+                                        <option value="25">25行</option>
+                                        <option value="50">50行</option>
+                                        <option value="100" selected>100行</option>
+                                        <option value="200">200行</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table id="dataTable" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="actions-column">操作</th>
+                                            <!-- テーブルヘッダーがここに表示されます -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- テーブルデータがここに表示されます -->
+                                        <tr>
+                                            <td colspan="2" class="no-data">データがありません</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination">
+                                <button id="prevPageBtn" class="icon-btn" disabled>
+                                    <span class="material-icons">navigate_before</span>
+                                </button>
+                                <span id="paginationInfo">0 / 0</span>
+                                <button id="nextPageBtn" class="icon-btn" disabled>
+                                    <span class="material-icons">navigate_next</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- クエリエディタ -->
+                        <div class="tab-pane" id="query-editor">
+                            <div class="query-editor-header">
+                                <h2>SQLクエリエディタ</h2>
+                                <div class="query-actions">
+                                    <button id="executeQueryBtn" class="primary-btn" disabled>
+                                        <span class="material-icons">play_arrow</span>実行
+                                    </button>
+                                    <button id="exportResultsBtn" class="secondary-btn" disabled>
+                                        <span class="material-icons">file_download</span>エクスポート
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editor-container">
+                                <textarea id="sqlEditor"></textarea>
+                            </div>
+                            <div class="query-results">
+                                <div class="query-results-header">
+                                    <h3>クエリ結果</h3>
+                                    <div id="queryStats" class="query-stats">
+                                        <!-- クエリ統計情報がここに表示されます -->
+                                    </div>
+                                </div>
+                                <div class="results-container">
+                                    <table id="resultsTable" class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <!-- 結果ヘッダーがここに表示されます -->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- 結果データがここに表示されます -->
+                                            <tr>
+                                                <td class="no-data">クエリを実行してください</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- テーブル構造 -->
+                        <div class="tab-pane" id="structure-view">
+                            <div class="structure-view-header">
+                                <h2 id="structureViewTitle">テーブルを選択してください</h2>
+                            </div>
+                            <div class="structure-container">
+                                <div class="structure-section">
+                                    <h3>カラム情報</h3>
+                                    <table id="columnsTable" class="structure-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>名前</th>
+                                                <th>型</th>
+                                                <th>NULL許可</th>
+                                                <th>デフォルト値</th>
+                                                <th>主キー</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- カラム情報がここに表示されます -->
+                                            <tr>
+                                                <td colspan="6" class="no-data">データがありません</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="structure-section">
+                                    <h3>インデックス</h3>
+                                    <table id="indicesTable" class="structure-table">
+                                        <thead>
+                                            <tr>
+                                                <th>名前</th>
+                                                <th>ユニーク</th>
+                                                <th>カラム</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- インデックス情報がここに表示されます -->
+                                            <tr>
+                                                <td colspan="3" class="no-data">データがありません</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="structure-section">
+                                    <h3>外部キー</h3>
+                                    <table id="foreignKeysTable" class="structure-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>参照テーブル</th>
+                                                <th>カラム</th>
+                                                <th>参照カラム</th>
+                                                <th>ON UPDATE</th>
+                                                <th>ON DELETE</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- 外部キー情報がここに表示されます -->
+                                            <tr>
+                                                <td colspan="6" class="no-data">データがありません</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- データベース接続モーダル -->
+        <div id="connectDatabaseModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>データベース接続</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div id="databaseList" class="database-list">
+                        <!-- データベースリストがここに表示されます -->
+                        <div class="no-databases">データベースがありません</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新規データベース作成モーダル -->
+        <div id="createDatabaseModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>新規データベース作成</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="createDatabaseForm">
+                        <div class="form-group">
+                            <label for="databaseName">データベース名:</label>
+                            <input type="text" id="databaseName" required placeholder="例: mydb.db">
+                            <small>※ .db, .sqlite, .sqlite3 の拡張子が自動的に付与されます</small>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancelCreateDatabaseBtn" class="secondary-btn">キャンセル</button>
+                            <button type="submit" id="submitCreateDatabaseBtn" class="primary-btn">作成</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行編集モーダル -->
+        <div id="editRowModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="editRowModalTitle">行を編集</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="editRowForm">
+                        <div id="editRowFields">
+                            <!-- 編集フィールドがここに表示されます -->
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancelEditRowBtn" class="secondary-btn">キャンセル</button>
+                            <button type="submit" id="submitEditRowBtn" class="primary-btn">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- エクスポートモーダル -->
+        <div id="exportModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>エクスポート</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="export-options">
+                        <div class="form-group">
+                            <label>フォーマット:</label>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="exportFormat" value="csv" checked> CSV (.csv)
+                                </label>
+                                <label>
+                                    <input type="radio" name="exportFormat" value="json"> JSON (.json)
+                                </label>
+                                <label>
+                                    <input type="radio" name="exportFormat" value="sql"> SQL (.sql)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button id="exportBtn" class="primary-btn">エクスポート</button>
+                        </div>
+                    </div>
+                    <div id="exportResult" class="export-result hidden">
+                        <div class="export-result-header">
+                            <h3>エクスポート結果</h3>
+                            <div class="export-result-actions">
+                                <button id="copyExportBtn" class="icon-btn" title="コピー">
+                                    <span class="material-icons">content_copy</span>
+                                </button>
+                                <button id="downloadExportBtn" class="icon-btn" title="ダウンロード">
+                                    <span class="material-icons">download</span>
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="exportContent"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 確認ダイアログ -->
+        <div id="confirmDialog" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>確認</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmMessage">本当に実行しますか？</p>
+                    <div class="form-actions">
+                        <button id="cancelConfirmBtn" class="secondary-btn">キャンセル</button>
+                        <button id="okConfirmBtn" class="primary-btn">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 通知 -->
+        <div id="notification" class="hidden"></div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

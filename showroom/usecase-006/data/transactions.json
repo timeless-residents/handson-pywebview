@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "date": "2025-03-07",
+    "amount": 100.0,
+    "categoryId": 1,
+    "description": "1",
+    "type": "expense",
+    "createdAt": "2025-03-07 13:29:17"
+  },
+  {
+    "id": 2,
+    "date": "2025-03-07",
+    "amount": 200.0,
+    "categoryId": 2,
+    "description": "2",
+    "type": "expense",
+    "createdAt": "2025-03-07 13:29:25"
+  },
+  {
+    "id": 3,
+    "date": "2025-03-07",
+    "amount": 165000.0,
+    "categoryId": 10,
+    "description": "",
+    "type": "income",
+    "createdAt": "2025-03-07 13:32:31"
+  },
+  {
+    "id": 4,
+    "date": "2025-02-07",
+    "amount": 50.0,
+    "categoryId": 1,
+    "description": "Test1",
+    "type": "expense",
+    "createdAt": "2025-03-07 13:35:06"
+  },
+  {
+    "id": 5,
+    "date": "2025-02-14",
+    "amount": 168000.0,
+    "categoryId": 10,
+    "description": "",
+    "type": "income",
+    "createdAt": "2025-03-07 13:35:22"
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "name": "食費",
+    "color": "#4caf50",
+    "type": "expense"
+  },
+  {
+    "id": 2,
+    "name": "住居費",
+    "color": "#2196f3",
+    "type": "expense"
+  },
+  {
+    "id": 3,
+    "name": "光熱費",
+    "color": "#ff9800",
+    "type": "expense"
+  },
+  {
+    "id": 4,
+    "name": "交通費",
+    "color": "#9c27b0",
+    "type": "expense"
+  },
+  {
+    "id": 5,
+    "name": "通信費",
+    "color": "#e91e63",
+    "type": "expense"
+  },
+  {
+    "id": 6,
+    "name": "娯楽費",
+    "color": "#009688",
+    "type": "expense"
+  },
+  {
+    "id": 7,
+    "name": "医療費",
+    "color": "#f44336",
+    "type": "expense"
+  },
+  {
+    "id": 8,
+    "name": "教育費",
+    "color": "#3f51b5",
+    "type": "expense"
+  },
+  {
+    "id": 9,
+    "name": "その他支出",
+    "color": "#9e9e9e",
+    "type": "expense"
+  },
+  {
+    "id": 10,
+    "name": "給与",
+    "color": "#4caf50",
+    "type": "income"
+  },
+  {
+    "id": 11,
+    "name": "ボーナス",
+    "color": "#2196f3",
+    "type": "income"
+  },
+  {
+    "id": 12,
+    "name": "副収入",
+    "color": "#ff9800",
+    "type": "income"
+  },
+  {
+    "id": 13,
+    "name": "その他収入",
+    "color": "#9e9e9e",
+    "type": "income"
+  }
+]

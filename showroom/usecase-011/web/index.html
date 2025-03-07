@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レシピ管理アプリ</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>レシピ管理アプリ</h1>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="レシピを検索...">
+                <select id="category-filter">
+                    <option value="">すべてのカテゴリ</option>
+                </select>
+                <button id="search-btn">検索</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="sidebar">
+                <div class="recipe-list-header">
+                    <h2>レシピ一覧</h2>
+                    <button id="add-recipe-btn" class="btn">新規レシピ</button>
+                </div>
+                <div id="recipe-list" class="recipe-list"></div>
+                <div class="category-section">
+                    <h3>カテゴリ管理</h3>
+                    <div class="category-form">
+                        <input type="text" id="new-category-input" placeholder="新しいカテゴリ">
+                        <button id="add-category-btn" class="btn">追加</button>
+                    </div>
+                    <div id="category-list" class="category-list"></div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div id="recipe-detail" class="recipe-detail">
+                    <div id="no-recipe-message">左側のリストからレシピを選択するか、新規レシピを作成してください</div>
+                    <div id="recipe-view" class="hidden">
+                        <div class="recipe-header">
+                            <h2 id="recipe-title"></h2>
+                            <div class="recipe-actions">
+                                <button id="edit-recipe-btn" class="btn">編集</button>
+                                <button id="delete-recipe-btn" class="btn btn-danger">削除</button>
+                            </div>
+                        </div>
+                        <div class="recipe-info">
+                            <div class="recipe-category" id="recipe-category"></div>
+                            <div class="recipe-time">
+                                <span>準備時間: <span id="prep-time"></span>分</span>
+                                <span>調理時間: <span id="cook-time"></span>分</span>
+                                <span>合計時間: <span id="total-time"></span>分</span>
+                            </div>
+                            <div class="recipe-servings">
+                                <span>人数: <span id="servings"></span>人前</span>
+                            </div>
+                        </div>
+                        <div class="recipe-description" id="recipe-description"></div>
+                        <div class="recipe-content">
+                            <div class="ingredients-section">
+                                <h3>材料</h3>
+                                <ul id="ingredients-list"></ul>
+                            </div>
+                            <div class="steps-section">
+                                <h3>手順</h3>
+                                <ol id="steps-list"></ol>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="recipe-form" class="hidden">
+                        <h2 id="form-title">新規レシピ</h2>
+                        <form id="recipe-edit-form">
+                            <input type="hidden" id="recipe-id">
+                            <div class="form-group">
+                                <label for="form-name">レシピ名</label>
+                                <input type="text" id="form-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="form-description">説明</label>
+                                <textarea id="form-description" rows="2"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="form-category">カテゴリ</label>
+                                    <select id="form-category" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="form-servings">人数</label>
+                                    <input type="number" id="form-servings" min="1" value="2">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="form-prep-time">準備時間（分）</label>
+                                    <input type="number" id="form-prep-time" min="0" value="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="form-cook-time">調理時間（分）</label>
+                                    <input type="number" id="form-cook-time" min="0" value="15">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>材料</label>
+                                <div id="ingredients-container">
+                                    <!-- Ingredient inputs will be added here -->
+                                </div>
+                                <button type="button" id="add-ingredient-btn" class="btn btn-small">材料を追加</button>
+                            </div>
+                            <div class="form-group">
+                                <label>手順</label>
+                                <div id="steps-container">
+                                    <!-- Step inputs will be added here -->
+                                </div>
+                                <button type="button" id="add-step-btn" class="btn btn-small">手順を追加</button>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" id="cancel-btn" class="btn">キャンセル</button>
+                                <button type="submit" id="save-recipe-btn" class="btn btn-primary">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

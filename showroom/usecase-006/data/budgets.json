@@ -1,0 +1,9 @@
+[
+  {
+    "id": 1,
+    "categoryId": 1,
+    "amount": 300.0,
+    "period": "monthly",
+    "startDate": "2025-03"
+  }
+]

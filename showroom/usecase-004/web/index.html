@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>PDF Viewer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- PDF.js ライブラリ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script>
+        // PDF.jsのワーカーを設定
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    </script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>PDF Viewer</h1>
+            <div class="file-controls">
+                <div class="file-selector">
+                    <select id="pdfSelect">
+                        <option value="">PDFファイルを選択...</option>
+                    </select>
+                </div>
+                <div class="page-controls">
+                    <button id="prevPage" disabled>前のページ</button>
+                    <span id="pageInfo">0 / 0</span>
+                    <button id="nextPage" disabled>次のページ</button>
+                </div>
+                <div class="zoom-controls">
+                    <button id="zoomOut" disabled>縮小</button>
+                    <span id="zoomLevel">100%</span>
+                    <button id="zoomIn" disabled>拡大</button>
+                </div>
+            </div>
+            <div class="search-controls">
+                <input type="text" id="searchInput" placeholder="検索..." disabled>
+                <button id="searchPrev" disabled>前へ</button>
+                <button id="searchNext" disabled>次へ</button>
+                <span id="searchInfo"></span>
+            </div>
+        </header>
+
+        <div class="viewer-container">
+            <div id="pdfContainer">
+                <canvas id="pdfViewer"></canvas>
+            </div>
+            <div id="textLayer"></div>
+            <div id="annotationLayer"></div>
+        </div>
+
+        <div id="loadingIndicator" class="hidden">
+            <div class="spinner"></div>
+            <span>読み込み中...</span>
+        </div>
+
+        <div id="notification" class="hidden"></div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
