@@ -11,7 +11,7 @@ permissions:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30 # タイムアウト設定を増やす
+    timeout-minutes: 30
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
@@ -29,32 +29,31 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Install dependencies (Common)
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller pywebview
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         shell: bash
 
-      - name: List files for debugging
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
         run: |
-          ls -la
-          ls -la showroom || echo "showroom directory not found"
+          if [ -f requirements-macos.txt ]; then pip install -r requirements-macos.txt; fi
         shell: bash
+
+      - name: Install dependencies (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          if (Test-Path -Path requirements-windows.txt -PathType Leaf) {
+            pip install -r requirements-windows.txt
+          }
+        shell: pwsh
 
       - name: Build with PyInstaller (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          # エラーが発生した場合でも処理を続行
-          set +e
           pyinstaller --clean --onefile --windowed --noconfirm --add-data "showroom:showroom" launcher.py
-          BUILD_EXIT_CODE=$?
-          if [ $BUILD_EXIT_CODE -ne 0 ]; then
-            echo "Build failed with exit code $BUILD_EXIT_CODE"
-            ls -la
-            exit $BUILD_EXIT_CODE
-          fi
-          set -e
           ls -la dist/
         shell: bash
 
