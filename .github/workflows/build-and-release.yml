@@ -84,8 +84,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           echo ">>> [Windows] Starting PyInstaller build for Windows"
-          pyinstaller --clean --onedir --windowed --noconfirm \
-            --add-data "showroom;showroom" launcher.py
+          pyinstaller --clean --onedir --windowed --noconfirm --add-data 'showroom;showroom' launcher.py
           echo ">>> [Windows] Listing contents of dist directory"
           dir dist
           echo ">>> [Windows] Finished PyInstaller build for Windows"
