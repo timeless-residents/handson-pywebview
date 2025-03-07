@@ -5,6 +5,9 @@ on:
     tags:
       - "v*" # タグがプッシュされたときにトリガー
 
+permissions:
+  contents: write # リポジトリコンテンツの読み取りと書き込み権限
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
