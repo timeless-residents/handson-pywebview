@@ -53,7 +53,6 @@ jobs:
       - name: Build with PyInstaller (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          # --onedirオプションで高速化、--keyオプションは削除
           pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom:showroom" launcher.py
           ls -la dist/
         shell: bash
@@ -61,9 +60,68 @@ jobs:
       - name: Build with PyInstaller (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          # --onedirオプションで高速化、--keyオプションは削除
           pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom;showroom" launcher.py
           dir dist
+
+      # macOS用証明書のインストールと設定
+      - name: Install Apple Certificate
+        if: matrix.os == 'macos-latest'
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # 証明書のデコードと保存
+          echo $APPLE_CERTIFICATE_BASE64 | base64 --decode > certificate.p12
+
+          # キーチェーンの作成
+          security create-keychain -p $KEYCHAIN_PASSWORD build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p $KEYCHAIN_PASSWORD build.keychain
+
+          # セキュリティ設定
+          security set-keychain-settings -t 3600 -u build.keychain
+
+          # 証明書のインポート
+          security import certificate.p12 -k build.keychain -P $APPLE_CERTIFICATE_PASSWORD -T /usr/bin/codesign
+
+          # コード署名の準備
+          security set-key-partition-list -S apple-tool:,apple: -s -k $KEYCHAIN_PASSWORD build.keychain
+
+          # 証明書の確認
+          security find-identity -v build.keychain
+
+      # macOSアプリに署名
+      - name: Sign macOS Application
+        if: matrix.os == 'macos-latest'
+        env:
+          APPLE_DEVELOPER_IDENTITY: ${{ secrets.APPLE_DEVELOPER_IDENTITY }}
+        run: |
+          # アプリケーションに署名
+          /usr/bin/codesign --force --options runtime --sign "$APPLE_DEVELOPER_IDENTITY" --deep dist/launcher.app
+
+          # 署名の検証
+          codesign -vvv --deep --strict dist/launcher.app
+
+      # macOSアプリを公証
+      - name: Notarize macOS Application
+        if: matrix.os == 'macos-latest'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          # アプリをzipに圧縮して公証に送信
+          ditto -c -k --keepParent dist/launcher.app launcher.zip
+
+          # 公証プロセスの実行
+          xcrun notarytool submit launcher.zip --apple-id "$APPLE_ID" --password "$APPLE_APP_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
+
+          # 公証ステープルの適用
+          xcrun stapler staple dist/launcher.app
+
+          # 公証を確認
+          xcrun stapler validate dist/launcher.app
 
       - name: Create ZIP archive (macOS)
         if: matrix.os == 'macos-latest' && success()
@@ -83,12 +141,13 @@ jobs:
           files: ${{ matrix.asset_name }}
           name: "PyWebview Launcher v${{ github.ref_name }}"
           body: |
-            PyWebview Launcher Application
+            PyWebview Launcher Application v${{ github.ref_name }}
 
             ## インストール方法
             - Windows: ZIPを解凍し、フォルダ内の `launcher.exe` を実行
-            - macOS: ZIPを解凍し、`launcher.app` を右クリック→「開く」→「開く」
+            - macOS: ZIPを解凍し、`launcher.app` をダブルクリックで実行
 
-            ## 注意点
-            - 起動速度を優先して最適化しています
-            - 初回起動時にはセキュリティ警告が表示される場合があります
+            ## 特徴
+            - 高速起動のためのパフォーマンス最適化
+            - Apple Developer IDによる正式署名済み（警告なしで実行可能）
+            - マルチプラットフォーム対応
