@@ -50,17 +50,21 @@ jobs:
           }
         shell: pwsh
 
+      # macOS用のビルド（--osx-bundle-identifier を指定）
       - name: Build with PyInstaller (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom:showroom" launcher.py
+          pyinstaller --clean --onedir --windowed --noconfirm \
+            --osx-bundle-identifier "handson.pywebview.launcher" \
+            --add-data "showroom:showroom" launcher.py
           ls -la dist/
         shell: bash
 
       - name: Build with PyInstaller (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom;showroom" launcher.py
+          pyinstaller --clean --onedir --windowed --noconfirm \
+            --add-data "showroom;showroom" launcher.py
           dir dist
 
       # macOS用証明書のインストールと設定
@@ -71,36 +75,32 @@ jobs:
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
-          # 証明書のデコードと保存
+          # 証明書をデコードして保存
           echo $APPLE_CERTIFICATE_BASE64 | base64 --decode > certificate.p12
 
-          # キーチェーンの作成
+          # 新しいキーチェーンの作成と設定
           security create-keychain -p $KEYCHAIN_PASSWORD build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p $KEYCHAIN_PASSWORD build.keychain
-
-          # セキュリティ設定
           security set-keychain-settings -t 3600 -u build.keychain
 
-          # 証明書のインポート
+          # 証明書のインポート（codesign 用に登録）
           security import certificate.p12 -k build.keychain -P $APPLE_CERTIFICATE_PASSWORD -T /usr/bin/codesign
-
-          # コード署名の準備
           security set-key-partition-list -S apple-tool:,apple: -s -k $KEYCHAIN_PASSWORD build.keychain
 
           # 証明書の確認
           security find-identity -v build.keychain
 
-      # macOSアプリに署名
+      # macOSアプリに署名（正しい Info.plist などが設定されていることを前提）
       - name: Sign macOS Application
         if: matrix.os == 'macos-latest'
         env:
           APPLE_DEVELOPER_IDENTITY: ${{ secrets.APPLE_DEVELOPER_IDENTITY }}
         run: |
-          # まず利用可能な証明書を確認
+          # 利用可能な証明書を確認
           security find-identity -v build.keychain
 
-          # 見つかった実際のIDを使用して署名
+          # キーチェーン内から Developer ID Application を抽出して署名（なければ secrets の値を使用）
           IDENTITY=$(security find-identity -v build.keychain | grep "Developer ID Application" | sed -E 's/.*"([^"]+)".*/\1/')
           if [ -n "$IDENTITY" ]; then
             echo "Using identity: $IDENTITY"
@@ -113,7 +113,7 @@ jobs:
           # 署名の検証
           codesign -vvv --deep --strict dist/launcher.app
 
-      # macOSアプリを公証
+      # macOSアプリの公証プロセス
       - name: Notarize macOS Application
         if: matrix.os == 'macos-latest'
         env:
@@ -121,24 +121,26 @@ jobs:
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          # アプリをzipに圧縮して公証に送信
+          # アプリを zip 圧縮
           ditto -c -k --keepParent dist/launcher.app launcher.zip
 
-          # 公証プロセスの実行
+          # 公証プロセスの実行（--wait で完了まで待機）
           xcrun notarytool submit launcher.zip --apple-id "$APPLE_ID" --password "$APPLE_APP_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
 
-          # 公証ステープルの適用
+          # 公証スタンプの適用
           xcrun stapler staple dist/launcher.app
 
-          # 公証を確認
+          # 公証確認
           xcrun stapler validate dist/launcher.app
 
+      # ZIP アーカイブの作成（macOS）
       - name: Create ZIP archive (macOS)
         if: matrix.os == 'macos-latest' && success()
         run: |
           cd dist
           zip -r ../${{ matrix.asset_name }} launcher.app
 
+      # ZIP アーカイブの作成（Windows）
       - name: Create ZIP archive (Windows)
         if: matrix.os == 'windows-latest' && success()
         run: |
@@ -154,10 +156,10 @@ jobs:
             PyWebview Launcher Application v${{ github.ref_name }}
 
             ## インストール方法
-            - Windows: ZIPを解凍し、フォルダ内の `launcher.exe` を実行
-            - macOS: ZIPを解凍し、`launcher.app` をダブルクリックで実行
+            - Windows: ZIP を解凍し、フォルダ内の `launcher.exe` を実行
+            - macOS: ZIP を解凍し、`launcher.app` をダブルクリックで実行
 
             ## 特徴
             - 高速起動のためのパフォーマンス最適化
-            - Apple Developer IDによる正式署名済み（警告なしで実行可能）
+            - Apple Developer ID による正式署名済み（警告なしで実行可能）
             - マルチプラットフォーム対応
