@@ -75,32 +75,22 @@ jobs:
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
-          # 証明書をデコードして保存
           echo $APPLE_CERTIFICATE_BASE64 | base64 --decode > certificate.p12
-
-          # 新しいキーチェーンの作成と設定
           security create-keychain -p $KEYCHAIN_PASSWORD build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p $KEYCHAIN_PASSWORD build.keychain
           security set-keychain-settings -t 3600 -u build.keychain
-
-          # 証明書のインポート（codesign 用に登録）
           security import certificate.p12 -k build.keychain -P $APPLE_CERTIFICATE_PASSWORD -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple: -s -k $KEYCHAIN_PASSWORD build.keychain
-
-          # 証明書の確認
           security find-identity -v build.keychain
 
-      # macOSアプリに署名（正しい Info.plist などが設定されていることを前提）
+      # macOSアプリに署名
       - name: Sign macOS Application
         if: matrix.os == 'macos-latest'
         env:
           APPLE_DEVELOPER_IDENTITY: ${{ secrets.APPLE_DEVELOPER_IDENTITY }}
         run: |
-          # 利用可能な証明書を確認
           security find-identity -v build.keychain
-
-          # キーチェーン内から Developer ID Application を抽出して署名（なければ secrets の値を使用）
           IDENTITY=$(security find-identity -v build.keychain | grep "Developer ID Application" | sed -E 's/.*"([^"]+)".*/\1/')
           if [ -n "$IDENTITY" ]; then
             echo "Using identity: $IDENTITY"
@@ -109,8 +99,6 @@ jobs:
             echo "Using identity from secrets: $APPLE_DEVELOPER_IDENTITY"
             /usr/bin/codesign --force --options runtime --sign "$APPLE_DEVELOPER_IDENTITY" --deep dist/launcher.app
           fi
-
-          # 署名の検証
           codesign -vvv --deep --strict dist/launcher.app
 
       # macOSアプリの公証プロセス
@@ -121,16 +109,9 @@ jobs:
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          # アプリを zip 圧縮
           ditto -c -k --keepParent dist/launcher.app launcher.zip
-
-          # 公証プロセスの実行（--wait で完了まで待機）
           xcrun notarytool submit launcher.zip --apple-id "$APPLE_ID" --password "$APPLE_APP_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait
-
-          # 公証スタンプの適用
           xcrun stapler staple dist/launcher.app
-
-          # 公証確認
           xcrun stapler validate dist/launcher.app
 
       # ZIP アーカイブの作成（macOS）
@@ -158,8 +139,3 @@ jobs:
             ## インストール方法
             - Windows: ZIP を解凍し、フォルダ内の `launcher.exe` を実行
             - macOS: ZIP を解凍し、`launcher.app` をダブルクリックで実行
-
-            ## 特徴
-            - 高速起動のためのパフォーマンス最適化
-            - Apple Developer ID による正式署名済み（警告なしで実行可能）
-            - マルチプラットフォーム対応
