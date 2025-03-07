@@ -50,7 +50,7 @@ jobs:
           }
         shell: pwsh
 
-      # macOS用のビルド（--osx-bundle-identifier を指定）
+      # macOS用のビルド（--osx-bundle-identifier  を指定）
       - name: Build with PyInstaller (macOS)
         if: matrix.os == 'macos-latest'
         run: |
