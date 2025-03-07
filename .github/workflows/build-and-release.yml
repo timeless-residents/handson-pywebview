@@ -53,14 +53,15 @@ jobs:
       - name: Build with PyInstaller (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          pyinstaller --clean --onefile --windowed --noconfirm --add-data "showroom:showroom" launcher.py
+          # バイトコードの最適化レベルを設定し、docstringを除去
+          pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom:showroom" --key="YOUR_SECRET_KEY" launcher.py
           ls -la dist/
         shell: bash
 
       - name: Build with PyInstaller (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          pyinstaller --clean --onefile --windowed --noconfirm --add-data "showroom;showroom" launcher.py
+          pyinstaller --clean --onedir --windowed --noconfirm --add-data "showroom;showroom" --key="YOUR_SECRET_KEY" launcher.py
           dir dist
 
       - name: Create ZIP archive (macOS)
@@ -72,10 +73,17 @@ jobs:
       - name: Create ZIP archive (Windows)
         if: matrix.os == 'windows-latest' && success()
         run: |
-          Compress-Archive -Path dist/launcher.exe -DestinationPath ${{ matrix.asset_name }}
+          Compress-Archive -Path dist/launcher -DestinationPath ${{ matrix.asset_name }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/') && success()
         with:
           files: ${{ matrix.asset_name }}
+          name: "PyWebview Launcher v${{ github.ref_name }}"
+          body: |
+            PyWebview Launcher Application
+
+            ## インストール方法
+            - Windows: ZIPを解凍し、フォルダ内の `launcher.exe` を実行
+            - macOS: ZIPを解凍し、`launcher.app` を右クリック→「開く」→「開く」
